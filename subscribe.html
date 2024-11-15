@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoBazaar - Subscribe</title>
+    <link rel="stylesheet" href="styles/css/main.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img height="40" width="160" src="images/Logo.png" alt="logo">
+                </a>
+
+                <ul class="nav_list">
+                    <li class="nav_list-item">
+                        <a href="stories.html" class="nav_list-link">Stories</a>
+                    </li>
+                    <li class="nav_list-item">
+                        <a href="features.html" class="nav_list-link">Features</a>
+                    </li>
+                    <li class="nav_list-item">
+                        <a href="pricing.html" class="nav_list-link">Pricing</a>
+                    </li>
+                </ul>
+
+                <a href="subscribe.html" class="btn btn-black">Subscribe</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="content">
+            <div class="container-lg">
+                <h2 class="heading white">Subscribe</h2>
+                <p class="opaque-grey">Join our community by subscribing to our newsletter. Get the latest updates, stories, and exclusive content delivered straight to your inbox.</p>
+
+                <div class="form-container">
+                    <h3 class="form-heading">Sign Up / Log In</h3>
+                    <form id="subscribeForm">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <a href="signup.html" class="btn btn-black">Sign Up</a>
+                            <button type="button" class="btn btn-secondary" onclick="validateForm()">Log In</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function validateForm() {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            var emailPattern = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i;
+
+            if (email === "" || password === "") {
+                alert("Please fill out both the email and password fields.");
+            } else if (!emailPattern.test(email)) {
+                alert("Please enter a valid email address.");
+            } else {
+                submitFormAsXML(email, password);
+            }
+        }
+
+        function submitFormAsXML(email, password) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "subscribe.php", true);
+            xhr.setRequestHeader("Content-Type", "application/xml");
+
+            // Construct XML data
+            var xmlData = `<credentials>
+                                <email>${email}</email>
+                                <password>${password}</password>
+                           </credentials>`;
+
+            // Handle the server's response
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var responseXML = xhr.responseXML;
+                    var status = responseXML.getElementsByTagName("status")[0].textContent;
+                    var message = responseXML.getElementsByTagName("message")[0].textContent;
+                    alert(message);
+                    if (status === "success") {
+                        document.getElementById('subscribeForm').reset();
+                    }
+                }
+            };
+
+            xhr.send(xmlData);
+        }
+    </script>
+
+</body>
+
+</html>

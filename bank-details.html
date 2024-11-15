@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoBazaar - Bank Details</title>
+    <link rel="stylesheet" href="styles/css/main.css">
+    <style>
+        .form-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            max-width: 400px;
+            margin: 40px auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-heading {
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-align: center;
+            color: #000000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background-color: #333333;
+        }
+
+        .form-group input:focus {
+            border-color: #26c6da;
+            outline: none;
+        }
+
+        /* Message styling */
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- MAIN -->
+    <main>
+        <section class="form-container">
+            <h3 class="form-heading">Enter Bank Details</h3>
+            <form id="bankDetailsForm" onsubmit="submitForm(event)">
+                <div class="form-group">
+                    <label for="accountHolder">Account Holder Name</label>
+                    <input type="text" id="accountHolder" name="accountHolder" required pattern="^[a-zA-Z\s]+$" title="Only letters and spaces allowed.">
+                </div>
+
+                <div class="form-group">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" name="accountNumber" required pattern="^\d{9,18}$" title="Account number must be between 9 to 18 digits.">
+                </div>
+
+                <div class="form-group">
+                    <label for="bankName">Bank Name</label>
+                    <input type="text" id="bankName" name="bankName" required pattern="^[a-zA-Z\s]+$" title="Only letters and spaces allowed.">
+                </div>
+
+                <div class="form-group">
+                    <label for="ifscCode">IFSC Code</label>
+                    <input type="text" id="ifscCode" name="ifscCode" required pattern="^[A-Z]{4}[0-9]{7}$" title="IFSC Code must be 11 characters (first 4 letters and 7 digits).">
+                </div>
+
+                <div class="form-group">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+            <!-- Message display area -->
+            <div id="responseMessage" class="message"></div>
+        </section>
+    </main>
+
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+
+            const formData = {
+                accountHolder: document.getElementById('accountHolder').value,
+                accountNumber: document.getElementById('accountNumber').value,
+                bankName: document.getElementById('bankName').value,
+                ifscCode: document.getElementById('ifscCode').value
+            };
+
+            fetch('process_bank_details.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseMessageDiv = document.getElementById('responseMessage');
+                if (data.status === 'success') {
+                    responseMessageDiv.className = 'message success';
+                    responseMessageDiv.textContent = 'Bank details submitted successfully.';
+                    // Optionally redirect after a delay
+                    setTimeout(() => {
+                        window.location.href = 'pricing.html';
+                    }, 2000);
+                } else {
+                    responseMessageDiv.className = 'message error';
+                    responseMessageDiv.textContent = data.message;
+                }
+            })
+            .catch(error => {
+                const responseMessageDiv = document.getElementById('responseMessage');
+                responseMessageDiv.className = 'message error';
+                responseMessageDiv.textContent = 'An error occurred. Please try again later.';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+
+</html>

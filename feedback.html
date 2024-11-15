@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoBazaar - Feedback</title>
+    <link rel="stylesheet" href="styles/css/main.css">
+    <style>
+        .form-container {
+            width: 80%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+
+        .form-container label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .form-container input, .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+        }
+
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #444;
+        }
+
+        .name-suggestions {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+            position: absolute;
+            z-index: 10;
+            background-color: #fff;
+            width: 100%;
+        }
+
+        .name-suggestions div {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .name-suggestions div:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img height="40" width="160" src="images/Logo.png" alt="logo">
+                </a>
+
+                <ul class="nav_list">
+                    <li class="nav_list-item">
+                        <a href="stories.html" class="nav_list-link">Stories</a>
+                    </li>
+                    <li class="nav_list-item">
+                        <a href="feedback.html" class="nav_list-link">Feedback</a>
+                    </li>
+                    <li class="nav_list-item">
+                        <a href="pricing.html" class="nav_list-link">Pricing</a>
+                    </li>
+                </ul>
+
+                <a href="subscribe.html" class="btn btn-black">Subscribe</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+        <section class="content">
+            <div class="container-lg">
+                <h2 class="heading white">Feedback</h2>
+                <p class="opaque-grey">We value your feedback. Please fill in the form below with your name and your valuable feedback.</p>
+
+                <!-- Feedback Form -->
+                <div class="form-container">
+                    <form id="feedback-form">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your name" oninput="getNameSuggestions(this.value)">
+                        <div id="suggestions" class="name-suggestions"></div>
+
+                        <label for="feedback">Your Feedback</label>
+                        <textarea id="feedback" name="feedback" rows="5" placeholder="Write your feedback here..."></textarea>
+
+                        <button type="submit">Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Function to get name suggestions based on input
+        function getNameSuggestions(query) {
+            if (query.length > 0) {
+                $.ajax({
+                    url: "get_names.php",
+                    method: "GET",
+                    data: { letter: query[0].toUpperCase() },
+                    success: function(response) {
+                        const names = JSON.parse(response);
+                        let suggestions = "";
+                        if (names.length > 0) {
+                            names.forEach(function(name) {
+                                suggestions += `<div onclick="selectName('${name}')">${name}</div>`;
+                            });
+                            document.getElementById('suggestions').innerHTML = suggestions;
+                            document.getElementById('suggestions').style.display = "block";
+                        } else {
+                            document.getElementById('suggestions').style.display = "none";
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('suggestions').style.display = "none";
+            }
+        }
+
+        // Function to select name from suggestions
+        function selectName(name) {
+            document.getElementById('name').value = name;
+            document.getElementById('suggestions').style.display = "none";
+        }
+
+        // Submit the form using AJAX
+        $("#feedback-form").on("submit", function(e) {
+            e.preventDefault();
+
+            const name = $("#name").val();
+            const feedback = $("#feedback").val();
+
+            $.ajax({
+                url: "submit_feedback.php",
+                method: "POST",
+                data: {
+                    name: name,
+                    feedback: feedback
+                },
+                success: function(response) {
+                    alert(response);
+                    $("#feedback-form")[0].reset();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

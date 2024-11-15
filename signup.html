@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoBazaar - Sign Up</title>
+    <link rel="stylesheet" href="styles/css/main.css">
+    <style>
+        .suggestions {
+            border: 1px solid #ccc;
+            max-height: 100px;
+            overflow-y: auto;
+            width: 300px;
+            position: absolute;
+            background-color: white;
+            z-index: 1000;
+        }
+
+        .suggestions div {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .suggestions div:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img height="40" width="160" src="images/Logo.png" alt="logo">
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="content">
+            <div class="container-lg">
+                <h2 class="heading white">Sign Up</h2>
+                <p class="opaque-grey">Create an account to enjoy exclusive features.</p>
+
+                <div class="form-container">
+                    <h3 class="form-heading">Create Your Account</h3>
+                    <form id="signupForm" action="signup.php" method="POST" onsubmit="validateSignUp(event)">
+                        <div class="form-group" style="position: relative;">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-black">Sign Up</button>
+                        </div>
+                    </form>
+                    <div id="message"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Form validation and AJAX form submission
+        function validateSignUp(event) {
+            event.preventDefault(); // Prevent form submission to handle with AJAX
+
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Basic password matching validation
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            var formData = new FormData(document.getElementById("signupForm"));
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "signup.php", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    document.getElementById("message").innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send(formData);
+        }
+    </script>
+
+</body>
+
+</html>
